@@ -1,1 +1,243 @@
-some content to init    
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mi TV</title>
+<style>
+  :root {
+    --bg: #0b0d12;
+    --fg: #f5f7fa;
+    --muted: #8b93a3;
+    --gap: clamp(16px, 2.2vw, 32px);
+    --radius: clamp(22px, 2.4vw, 34px);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: radial-gradient(circle at 50% -10%, #1c2130 0%, var(--bg) 55%);
+    color: var(--fg);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  .screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(20px, 4vh, 48px) clamp(24px, 5vw, 72px);
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: clamp(18px, 4vh, 42px);
+  }
+  .greeting { font-size: clamp(22px, 3.2vw, 40px); font-weight: 600; }
+  .greeting span { color: var(--muted); font-weight: 400; }
+  .clock { font-size: clamp(26px, 4vw, 52px); font-weight: 700; letter-spacing: 1px; }
+  .date { font-size: clamp(13px, 1.4vw, 18px); color: var(--muted); text-align: right; text-transform: capitalize; }
+
+  .grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: 1fr;
+    gap: var(--gap);
+    min-height: 0;
+  }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px)  { .grid { grid-template-columns: 1fr; } }
+
+  .tile {
+    position: relative;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--tile);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(10px, 1.4vw, 18px);
+    padding: clamp(16px, 2vw, 30px);
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease, outline-color .12s ease;
+    outline: 4px solid transparent;
+    outline-offset: 3px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  }
+  /* brillo suave arriba para dar profundidad */
+  .tile::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.22), transparent 60%);
+    pointer-events: none;
+  }
+
+  .badge {
+    width: clamp(74px, 8vw, 128px);
+    height: clamp(74px, 8vw, 128px);
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,.28), inset 0 0 0 1px rgba(0,0,0,.05);
+  }
+  .logo {
+    width: 62%; height: 62%;
+    background: var(--ink);
+    -webkit-mask: var(--icon) center / contain no-repeat;
+            mask: var(--icon) center / contain no-repeat;
+  }
+  .logo.emoji {
+    background: none; -webkit-mask: none; mask: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(38px, 4.4vw, 66px); line-height: 1;
+  }
+
+  .name { font-size: clamp(18px, 2vw, 30px); font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
+  .hint {
+    position: absolute; top: clamp(12px, 1.4vw, 20px); right: clamp(14px, 1.6vw, 22px);
+    background: rgba(0,0,0,.35); border-radius: 999px;
+    padding: 4px 12px; font-size: clamp(11px, 1vw, 14px); font-weight: 700;
+    letter-spacing: .5px;
+  }
+
+  .tile:hover, .tile:focus-visible, .tile:focus {
+    transform: translateY(-8px) scale(1.035);
+    outline-color: #fff;
+    box-shadow: 0 18px 46px rgba(0,0,0,.6);
+  }
+
+  footer {
+    margin-top: clamp(16px, 3vh, 32px);
+    display: flex; gap: 20px; align-items: center;
+    color: var(--muted); font-size: clamp(12px, 1.2vw, 16px);
+  }
+  footer button {
+    background: rgba(255,255,255,.08); color: var(--fg);
+    border: 1px solid rgba(255,255,255,.14); border-radius: 999px;
+    padding: 10px 20px; font-size: inherit; cursor: pointer;
+  }
+  footer button:hover { background: rgba(255,255,255,.16); }
+  kbd { background: rgba(255,255,255,.1); border-radius: 6px; padding: 2px 8px; font-family: inherit; font-size: .9em; }
+</style>
+</head>
+<body>
+  <div class="screen">
+    <header>
+      <div class="greeting" id="greeting">Hola <span>· ¿qué miramos?</span></div>
+      <div>
+        <div class="clock" id="clock">--:--</div>
+        <div class="date" id="date"></div>
+      </div>
+    </header>
+
+    <main class="grid" id="grid"></main>
+
+    <footer>
+      <button id="fs">⛶ Pantalla completa (F11)</button>
+      <span>Movete con las <kbd>← ↑ ↓ →</kbd> y <kbd>Enter</kbd>, o con el mouse.</span>
+    </footer>
+  </div>
+
+<script>
+  // Íconos de marca (Simple Icons vía CDN). Se pintan con "ink" sobre chapa blanca.
+  const CDN = "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/";
+  const icon = (slug) => `url("${CDN}${slug}.svg")`;
+
+  // ---- Plataformas -------------------------------------------------------
+  const APPS = [
+    { name: "YouTube",    slug: "youtube",      ink: "#FF0033", url: "https://www.youtube.com/tv",              color: "#ff0033", hint: "TV" },
+    { name: "Netflix",    slug: "netflix",      ink: "#E50914", url: "https://www.netflix.com/",                color: "#b1060f" },
+    { name: "Disney+",    slug: "disneyplus",   ink: "#113CCF", url: "https://www.disneyplus.com/",             color: "#1a2b6d" },
+    { name: "Max",        slug: "hbo",          ink: "#5b21b6", url: "https://play.max.com/",                   color: "#0046ff", hint: "HBO" },
+    { name: "Paramount+", slug: "paramountplus",ink: "#0064FF", url: "https://www.paramountplus.com/ar/",       color: "#0057e7" },
+    { name: "Spotify",    slug: "spotify",      ink: "#1DB954", url: "https://open.spotify.com/",               color: "#1db954" },
+    { name: "MercadoPlay",slug: "mercadolibre", ink: "#2D3277", url: "https://play.mercadolibre.com.ar/?origin=navigation_menu_web#nav-header", color: "#ffe600", fg: "#111", hint: "gratis" },
+    { name: "Telefe",     emoji: "📺",          url: "https://www.mitelefe.com/telefe-en-vivo", color: "#00a0e0", hint: "EN VIVO" },
+    { name: "Cine.ar",    emoji: "🎬",          url: "https://play.cine.ar/bienvenida/",        color: "#7b2ff7", hint: "cine AR" },
+  ];
+
+  // Abrir en la MISMA pestaña (kiosco). Poné true para pestaña nueva.
+  const NUEVA_PESTANA = false;
+
+  // ---- Render ------------------------------------------------------------
+  const grid = document.getElementById("grid");
+  APPS.forEach((app) => {
+    const btn = document.createElement("button");
+    btn.className = "tile";
+    btn.style.setProperty("--tile", `linear-gradient(155deg, ${app.color} 0%, ${shade(app.color, -45)} 100%)`);
+    if (app.fg) btn.style.color = app.fg;
+
+    const logo = app.emoji
+      ? `<span class="logo emoji">${app.emoji}</span>`
+      : `<span class="logo" style="--icon:${icon(app.slug)}; --ink:${app.ink}"></span>`;
+
+    btn.innerHTML = `
+      ${app.hint ? `<span class="hint">${app.hint}</span>` : ""}
+      <span class="badge">${logo}</span>
+      <span class="name">${app.name}</span>`;
+    btn.addEventListener("click", () => go(app.url));
+    grid.appendChild(btn);
+  });
+
+  function go(url) {
+    if (NUEVA_PESTANA) window.open(url, "_blank");
+    else window.location.href = url;
+  }
+
+  function shade(hex, amt) {
+    const n = parseInt(hex.slice(1), 16);
+    let r = (n >> 16) + amt, g = ((n >> 8) & 255) + amt, b = (n & 255) + amt;
+    r = Math.max(0, Math.min(255, r)); g = Math.max(0, Math.min(255, g)); b = Math.max(0, Math.min(255, b));
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  }
+
+  // ---- Navegación con teclado / control remoto --------------------------
+  const tiles = [...document.querySelectorAll(".tile")];
+  const cols = () => (window.innerWidth <= 640 ? 1 : window.innerWidth <= 1100 ? 2 : 3);
+  let idx = 0;
+  tiles[0].focus();
+
+  document.addEventListener("keydown", (e) => {
+    const c = cols();
+    if (["ArrowRight","ArrowLeft","ArrowUp","ArrowDown"].includes(e.key)) e.preventDefault();
+    if (e.key === "ArrowRight") idx = Math.min(tiles.length - 1, idx + 1);
+    else if (e.key === "ArrowLeft") idx = Math.max(0, idx - 1);
+    else if (e.key === "ArrowDown") idx = Math.min(tiles.length - 1, idx + c);
+    else if (e.key === "ArrowUp") idx = Math.max(0, idx - c);
+    else return;
+    tiles[idx].focus();
+  });
+  tiles.forEach((t, i) => t.addEventListener("focus", () => (idx = i)));
+
+  // ---- Pantalla completa -------------------------------------------------
+  document.getElementById("fs").addEventListener("click", () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  });
+
+  // ---- Reloj y fecha -----------------------------------------------------
+  const dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+  const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  function tick() {
+    const d = new Date();
+    document.getElementById("clock").textContent =
+      String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+    document.getElementById("date").textContent =
+      `${dias[d.getDay()]} ${d.getDate()} de ${meses[d.getMonth()]}`;
+  }
+  tick();
+  setInterval(tick, 10000);
+</script>
+</body>
+</html>
