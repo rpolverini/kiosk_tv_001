@@ -5,56 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Canales - Argentina</title>
 <style>
-  :root{--bg:#0b0d12;--fg:#f5f7fa;--gap:18px;--radius:16px}
+  :root{--bg:#0b0d12;--fg:#f5f7fa;--muted:#9aa0b3;--gap:18px;--radius:16px}
   html,body{height:100%;margin:0;background:radial-gradient(circle at 50% -10%, #1c2130 0%, var(--bg) 55%);color:var(--fg);font-family:system-ui,Arial}
-  .wrap{padding:24px;display:flex;flex-direction:column;height:100%}
-  header{display:flex;justify-content:space-between;align-items:center}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);flex:1;align-content:start;margin-top:20px}
+  .wrap{padding:24px;display:flex;flex-direction:column;min-height:100%}
+  header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .intro{margin-top:8px;color:var(--muted)}
+  .section{margin-top:24px}
+  .section h2{margin:0 0 12px;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase;color:#8bd3ff}
+  .section .note{margin:-4px 0 10px;color:var(--muted);font-size:.92rem}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
   .card{background:rgba(255,255,255,.04);padding:14px;border-radius:var(--radius);display:flex;align-items:center;gap:12px}
-  .logo{width:72px;height:48px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#111;font-weight:700}
+  .logo{width:72px;height:48px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#111;font-weight:700;font-size:.95rem}
   .meta{flex:1}
-  .play{background:#0ea5a4;border:none;color:#042;pad:8px 12px;border-radius:10px;cursor:pointer}
-  footer{margin-top:12px;color:#9aa0b3}
+  .meta strong{display:block;margin-bottom:4px}
+  .meta .detail{font-size:.9em;color:var(--muted)}
+  .play{background:#0ea5a4;border:none;color:#042;padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+  footer{margin-top:20px;color:var(--muted)}
   @media(max-width:640px){.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Canales de Argentina</h1>
+      <div>
+        <h1>Canales de Argentina</h1>
+        <div class="intro">Secciones nuevas: locales, en aire y noticias internacionales.</div>
+      </div>
       <a href="index.html">← Volver</a>
     </header>
 
-    <main class="grid" id="grid">
-      <!-- Las entradas se generan por JS -->
-    </main>
+    <main id="main"></main>
 
-    <footer>Fuentes: IPTV-ORG M3U y transmisiones oficiales cuando están disponibles.</footer>
+    <footer>Fuentes: IPTV-ORG M3U y enlaces oficiales cuando están disponibles.</footer>
   </div>
 
   <script>
-  // Lista de 10 canales principales con URL extraída de IPTV-ORG (si disponible)
-  const CHANNELS = [
-    {name:'El Trece', url:'https://livetrx01.vodgc.net/eltrecetv/index.m3u8'},
-    {name:'Telefe', url:'http://playcom.trapemn.tv:1935/transcoderip/telefe.stream/playlist.m3u8'},
-    {name:'C5N', url:'http://45.6.4.35/C5N/index.m3u8'},
-    {name:'America TV', url:'http://playcom.trapemn.tv:1935/transcoderip/america.stream/playlist.m3u8'},
-    {name:'Canal 9', url:'http://playcom.trapemn.tv:1935/transcoderip/canal9.stream/playlist.m3u8'},
-    {name:'TV Pública', url:'http://45.6.4.35/TV_PUBLICA/index.m3u8'},
-    {name:'Canal 26', url:'https://stream-gtlc.telecentro.net.ar/hls/canal26hls/main.m3u8'},
-    {name:'Canal 7 Neuquén', url:'https://stream.arcast.com.ar/c7nq/ngrp:c7nq_all/playlist.m3u8'},
-    {name:'Canal 10 Córdoba', url:'https://stream.arcast.net:4443/canal10/ngrp:canal10_all/playlist.m3u8'},
-    {name:'Canal 13 Jujuy', url:'https://genexservicios.com:19360/canal13jujuy/canal13jujuy.m3u8'}
+  const SECTIONS = [
+    {
+      title: 'Locales',
+      note: 'Canales locales de Mar del Plata y universidades con transmisión pública disponible.',
+      items: [
+        {name:'Canal 8', url:'https://mi8.com.ar/en-vivo/', detail:'Local / Mar del Plata'},
+        {name:'Canal 10', url:'https://www.canal10mardelplata.tv/', detail:'Local / Mar del Plata'},
+        {name:'TV Universidad (UNLP)', url:'https://stratus.stream.cespi.unlp.edu.ar/hls/tvunlp.m3u8', detail:'Universidad / La Plata'}
+      ]
+    },
+    {
+      title: 'Noticias internacionales',
+      items: [
+        {name:'Telesur', url:'https://www.telesurenglish.net/', detail:'Venezuela / Noticias'},
+        {name:'NTN24', url:'https://www.ntn24.com/en-vivo', detail:'Colombia / Noticias'}
+      ]
+    },
+    {
+      title: 'Aire',
+      items: [
+        {name:'C5N', url:'http://45.6.4.35/C5N/index.m3u8', detail:'Noticias'},
+        {name:'América TV', url:'https://www.americatv.com.ar/en-vivo', detail:'General'},
+        {name:'Canal 9', url:'https://www.canal9.com/', detail:'General'},
+        {name:'Telefe', url:'https://www.mitelefe.com/telefe-en-vivo', detail:'General'},
+        {name:'El Trece', url:'https://livetrx01.vodgc.net/eltrecetv/index.m3u8', detail:'General'},
+        {name:'TV Pública', url:'https://www.tvpublica.com.ar', detail:'General'}
+      ]
+    },
+    {
+      title: 'Otros',
+      note: 'Canales provinciales y otros vinculados a la grilla general.',
+      items: [
+        {name:'Canal 26', url:'https://stream-gtlc.telecentro.net.ar/hls/canal26hls/main.m3u8', detail:'Noticias'},
+        {name:'Canal 7 Neuquén', url:'https://stream.arcast.com.ar/c7nq/ngrp:c7nq_all/playlist.m3u8', detail:'Regional'},
+        {name:'Canal 10 Córdoba', url:'https://stream.arcast.net:4443/canal10/ngrp:canal10_all/playlist.m3u8', detail:'Regional'},
+        {name:'Canal 13 Jujuy', url:'https://genexservicios.com:19360/canal13jujuy/canal13jujuy.m3u8', detail:'Regional'}
+      ]
+    }
   ];
 
-  const grid = document.getElementById('grid');
-  CHANNELS.forEach(c => {
-    const d = document.createElement('div'); d.className='card';
-    d.innerHTML = `<div class="logo">${c.name.split(' ')[0]}</div><div class="meta"><strong>${c.name}</strong><div style="font-size:.9em;color:#9aa0b3;">Fuente: IPTV-ORG</div></div><button class="play" onclick="play('${c.url}')">Abrir</button>`;
-    grid.appendChild(d);
+  const main = document.getElementById('main');
+
+  SECTIONS.forEach(section => {
+    const sectionEl = document.createElement('section');
+    sectionEl.className = 'section';
+    sectionEl.innerHTML = `<h2>${section.title}</h2>${section.note ? `<div class="note">${section.note}</div>` : ''}<div class="grid"></div>`;
+    const grid = sectionEl.querySelector('.grid');
+
+    section.items.forEach(c => {
+      const d = document.createElement('div');
+      d.className = 'card';
+      d.innerHTML = `<div class="logo">${getInitials(c.name)}</div><div class="meta"><strong>${c.name}</strong><div class="detail">${c.detail}</div></div><button class="play">Abrir</button>`;
+      d.querySelector('.play').addEventListener('click', () => play(c.url));
+      grid.appendChild(d);
+    });
+
+    main.appendChild(sectionEl);
   });
 
-  function play(u){ window.location.href = u }
+  function getInitials(name) {
+    return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  function play(u) {
+    window.location.href = u;
+  }
   </script>
 </body>
 </html>

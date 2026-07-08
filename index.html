@@ -98,6 +98,9 @@
   .logo img {
     width: 100%; height: 100%; object-fit: contain; display: block;
   }
+  .logo svg {
+    width: 100%; height: 100%; display: block;
+  }
   .logo.emoji {
     background: none; -webkit-mask: none; mask: none;
     display: flex; align-items: center; justify-content: center;
@@ -116,6 +119,52 @@
     transform: translateY(-8px) scale(1.035);
     outline-color: #fff;
     box-shadow: 0 18px 46px rgba(0,0,0,.6);
+  }
+
+  .tile.split {
+    padding: 0;
+    overflow: hidden;
+  }
+  .tile.split .split-top {
+    padding: 16px 18px 12px;
+    font-size: clamp(16px, 1.9vw, 22px);
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.08);
+  }
+  .tile.split .split-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: calc(100% - 60px);
+  }
+  .tile.split .split-half {
+    border: 0;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    font: inherit;
+  }
+  .tile.split .split-half:first-child {
+    border-right: 1px solid rgba(255,255,255,.16);
+  }
+  .tile.split .split-half:hover,
+  .tile.split .split-half:focus-visible {
+    background: rgba(255,255,255,.16);
+    outline: none;
+  }
+  .tile.split .split-icon {
+    font-size: clamp(20px, 2.2vw, 28px);
+  }
+  .tile.split .split-label {
+    font-size: clamp(12px, 1.2vw, 16px);
+    font-weight: 700;
   }
 
   footer {
@@ -156,16 +205,17 @@
   const icon = (slug) => `${CDN}${slug}.svg`;
 
   // ---- Plataformas -------------------------------------------------------
+  const disneyLogo = `<svg viewBox="0 0 48 48" aria-label="Disney+" role="img"><rect x="4" y="4" width="40" height="40" rx="10" fill="#113CCF"></rect><path d="M17 14h6c5 0 8 2 8 7v1h-6v-1c0-2-1-3-3-3h-2v12h-3V14Zm13 0h3v16h-3V14Z" fill="#fff"></path></svg>`;
   const APPS = [
     { name: "YouTube",    slug: "youtube",      ink: "#FF0033", url: "https://www.youtube.com/tv",              color: "#ff0033", hint: "TV" },
     { name: "Netflix",    slug: "netflix",      ink: "#E50914", url: "https://www.netflix.com/",                color: "#b1060f" },
-    { name: "Disney+",    slug: "disneyplus",   ink: "#113CCF", url: "https://www.disneyplus.com/",             color: "#1a2b6d" },
-    { name: "Otras plataformas", emoji: "🧩",      url: "otras.html",                               color: "#4b5563", hint: "más" },
+    { name: "Disney+",    svg: disneyLogo,     ink: "#113CCF", url: "https://www.disneyplus.com/",             color: "#1a2b6d" },
+    { name: "Canales", emoji: "📺",               url: "canales.html",                             color: "#1f2937", hint: "IPTV" },
     { name: "Paramount+", slug: "paramountplus",ink: "#0064FF", url: "https://www.paramountplus.com/ar/",       color: "#0057e7" },
-    { name: "Spotify",    slug: "spotify",      ink: "#1DB954", url: "https://open.spotify.com/",               color: "#1db954" },
-    { name: "Mas canales IPTV", emoji: "📺",       url: "canales.html",                              color: "#1f2937", hint: "IPTV" },
-    { name: "Telefe",     emoji: "📺",          url: "https://www.mitelefe.com/telefe-en-vivo", color: "#00a0e0", hint: "EN VIVO" },
+    { name: "Otras plataformas", emoji: "🧩",      url: "otras.html",                               color: "#4b5563", hint: "más" },
+    { name: "Eithan",     emoji: "🎶",          url: "eithan.html",                              color: "#7c3aed", hint: "videos" },
     { name: "Cine.ar",    emoji: "🎬",          url: "https://play.cine.ar/bienvenida/",        color: "#7b2ff7", hint: "cine AR" },
+    { type: "split", name: "Telefe", color: "#00a0e0", hint: "EN VIVO", leftLabel: "Telefe", leftIcon: "📺", leftUrl: "https://www.mitelefe.com/telefe-en-vivo", rightLabel: "Gemini", rightIcon: "✨", rightUrl: "https://gemini.google.com/app" },
   ];
 
   // Abrir en la MISMA pestaña (kiosco). Poné true para pestaña nueva.
@@ -174,20 +224,44 @@
   // ---- Render ------------------------------------------------------------
   const grid = document.getElementById("grid");
   APPS.forEach((app) => {
-    const btn = document.createElement("button");
-    btn.className = "tile";
+    const btn = document.createElement(app.type === "split" ? "div" : "button");
+    btn.className = app.type === "split" ? "tile split" : "tile";
     btn.style.setProperty("--tile", `linear-gradient(155deg, ${app.color} 0%, ${shade(app.color, -45)} 100%)`);
     if (app.fg) btn.style.color = app.fg;
 
-    const logo = app.emoji
-      ? `<span class="logo emoji">${app.emoji}</span>`
-      : `<span class="logo"><img src="${icon(app.slug)}" alt="${app.name}" /></span>`;
+    if (app.type === "split") {
+      btn.innerHTML = `
+        ${app.hint ? `<span class="hint">${app.hint}</span>` : ""}
+        <div class="split-top">${app.name}</div>
+        <div class="split-body">
+          <button class="split-half" data-url="${app.leftUrl}">
+            <span class="split-icon">${app.leftIcon}</span>
+            <span class="split-label">${app.leftLabel}</span>
+          </button>
+          <button class="split-half" data-url="${app.rightUrl}">
+            <span class="split-icon">${app.rightIcon}</span>
+            <span class="split-label">${app.rightLabel}</span>
+          </button>
+        </div>`;
+      btn.querySelectorAll(".split-half").forEach((half) => {
+        half.addEventListener("click", (e) => {
+          e.stopPropagation();
+          go(half.getAttribute("data-url"));
+        });
+      });
+    } else {
+      const logo = app.emoji
+        ? `<span class="logo emoji">${app.emoji}</span>`
+        : app.svg
+          ? `<span class="logo">${app.svg}</span>`
+          : `<span class="logo"><img src="${icon(app.slug)}" alt="${app.name}" /></span>`;
 
-    btn.innerHTML = `
-      ${app.hint ? `<span class="hint">${app.hint}</span>` : ""}
-      <span class="badge">${logo}</span>
-      <span class="name">${app.name}</span>`;
-    btn.addEventListener("click", () => go(app.url));
+      btn.innerHTML = `
+        ${app.hint ? `<span class="hint">${app.hint}</span>` : ""}
+        <span class="badge">${logo}</span>
+        <span class="name">${app.name}</span>`;
+      btn.addEventListener("click", () => go(app.url));
+    }
     grid.appendChild(btn);
   });
 
