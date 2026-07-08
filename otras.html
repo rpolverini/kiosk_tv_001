@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Otras plataformas</title>
+<style>
+  :root{--bg:#0b0d12;--fg:#f5f7fa;--gap:20px;--radius:18px}
+  html,body{height:100%;margin:0;background:radial-gradient(circle at 50% -10%, #1c2130 0%, var(--bg) 55%);color:var(--fg);font-family:system-ui,Arial}
+  .wrap{padding:28px;display:flex;flex-direction:column;height:100%}
+  header{display:flex;justify-content:space-between;align-items:center}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);flex:1;align-content:start;margin-top:24px}
+  .tile{background:rgba(255,255,255,.06);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer;color:inherit;border:none}
+  .badge{width:96px;height:96px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center}
+  .logo{width:60%;height:60%;display:flex;align-items:center;justify-content:center}
+  .logo img{width:100%;height:100%;object-fit:contain;display:block}
+  a{color:inherit;text-decoration:none}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:540px){.grid{grid-template-columns:1fr}}
+  footer{margin-top:18px;color:#9aa0b3}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Otras plataformas</h1>
+      <a href="index.html">← Volver</a>
+    </header>
+
+    <main class="grid" id="grid"></main>
+
+    <footer>
+      Plataformas para ver películas o aprender idiomas (algunas son gratuitas).
+    </footer>
+  </div>
+
+<script>
+const CDN = 'https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/';
+const items = [
+  {name:'Max', slug:'hbo', url:'https://play.max.com/'},
+  {name:'Crunchyroll', slug:'crunchyroll', url:'https://www.crunchyroll.com/'},
+  {name:'Prime Video', slug:'prime', url:'https://www.primevideo.com/'},
+  {name:'MercadoPlay', slug:'mercadolibre', url:'https://play.mercadolibre.com.ar/?origin=navigation_menu_web#nav-header'},
+  {name:'RTVE', slug:'rtve', url:'https://www.rtve.es/play/'},
+  {name:'RTVE La 1', slug:'rtve', url:'https://www.rtve.es/play/directo/la-1/'}
+];
+
+const grid = document.getElementById('grid');
+items.forEach((item) => {
+  const btn = document.createElement('button');
+  btn.className = 'tile';
+  btn.onclick = () => go(item.url);
+  btn.innerHTML = `
+    <div class="badge"><div class="logo"><img src="${CDN}${item.slug}.svg" alt="${item.name}" /></div></div>
+    <div>${item.name}</div>
+  `;
+  grid.appendChild(btn);
+});
+
+function go(u){window.location.href=u}
+</script>
+</body>
+</html>

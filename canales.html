@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Canales - Argentina</title>
+<style>
+  :root{--bg:#0b0d12;--fg:#f5f7fa;--gap:18px;--radius:16px}
+  html,body{height:100%;margin:0;background:radial-gradient(circle at 50% -10%, #1c2130 0%, var(--bg) 55%);color:var(--fg);font-family:system-ui,Arial}
+  .wrap{padding:24px;display:flex;flex-direction:column;height:100%}
+  header{display:flex;justify-content:space-between;align-items:center}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap);flex:1;align-content:start;margin-top:20px}
+  .card{background:rgba(255,255,255,.04);padding:14px;border-radius:var(--radius);display:flex;align-items:center;gap:12px}
+  .logo{width:72px;height:48px;background:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#111;font-weight:700}
+  .meta{flex:1}
+  .play{background:#0ea5a4;border:none;color:#042;pad:8px 12px;border-radius:10px;cursor:pointer}
+  footer{margin-top:12px;color:#9aa0b3}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Canales de Argentina</h1>
+      <a href="index.html">← Volver</a>
+    </header>
+
+    <main class="grid" id="grid">
+      <!-- Las entradas se generan por JS -->
+    </main>
+
+    <footer>Fuentes: IPTV-ORG M3U y transmisiones oficiales cuando están disponibles.</footer>
+  </div>
+
+  <script>
+  // Lista de 10 canales principales con URL extraída de IPTV-ORG (si disponible)
+  const CHANNELS = [
+    {name:'El Trece', url:'https://livetrx01.vodgc.net/eltrecetv/index.m3u8'},
+    {name:'Telefe', url:'http://playcom.trapemn.tv:1935/transcoderip/telefe.stream/playlist.m3u8'},
+    {name:'C5N', url:'http://45.6.4.35/C5N/index.m3u8'},
+    {name:'America TV', url:'http://playcom.trapemn.tv:1935/transcoderip/america.stream/playlist.m3u8'},
+    {name:'Canal 9', url:'http://playcom.trapemn.tv:1935/transcoderip/canal9.stream/playlist.m3u8'},
+    {name:'TV Pública', url:'http://45.6.4.35/TV_PUBLICA/index.m3u8'},
+    {name:'Canal 26', url:'https://stream-gtlc.telecentro.net.ar/hls/canal26hls/main.m3u8'},
+    {name:'Canal 7 Neuquén', url:'https://stream.arcast.com.ar/c7nq/ngrp:c7nq_all/playlist.m3u8'},
+    {name:'Canal 10 Córdoba', url:'https://stream.arcast.net:4443/canal10/ngrp:canal10_all/playlist.m3u8'},
+    {name:'Canal 13 Jujuy', url:'https://genexservicios.com:19360/canal13jujuy/canal13jujuy.m3u8'}
+  ];
+
+  const grid = document.getElementById('grid');
+  CHANNELS.forEach(c => {
+    const d = document.createElement('div'); d.className='card';
+    d.innerHTML = `<div class="logo">${c.name.split(' ')[0]}</div><div class="meta"><strong>${c.name}</strong><div style="font-size:.9em;color:#9aa0b3;">Fuente: IPTV-ORG</div></div><button class="play" onclick="play('${c.url}')">Abrir</button>`;
+    grid.appendChild(d);
+  });
+
+  function play(u){ window.location.href = u }
+  </script>
+</body>
+</html>

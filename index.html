@@ -93,9 +93,10 @@
   }
   .logo {
     width: 62%; height: 62%;
-    background: var(--ink);
-    -webkit-mask: var(--icon) center / contain no-repeat;
-            mask: var(--icon) center / contain no-repeat;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
   }
   .logo.emoji {
     background: none; -webkit-mask: none; mask: none;
@@ -152,17 +153,17 @@
 <script>
   // Íconos de marca (Simple Icons vía CDN). Se pintan con "ink" sobre chapa blanca.
   const CDN = "https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/";
-  const icon = (slug) => `url("${CDN}${slug}.svg")`;
+  const icon = (slug) => `${CDN}${slug}.svg`;
 
   // ---- Plataformas -------------------------------------------------------
   const APPS = [
     { name: "YouTube",    slug: "youtube",      ink: "#FF0033", url: "https://www.youtube.com/tv",              color: "#ff0033", hint: "TV" },
     { name: "Netflix",    slug: "netflix",      ink: "#E50914", url: "https://www.netflix.com/",                color: "#b1060f" },
     { name: "Disney+",    slug: "disneyplus",   ink: "#113CCF", url: "https://www.disneyplus.com/",             color: "#1a2b6d" },
-    { name: "Max",        slug: "hbo",          ink: "#5b21b6", url: "https://play.max.com/",                   color: "#0046ff", hint: "HBO" },
+    { name: "Otras plataformas", emoji: "🧩",      url: "otras.html",                               color: "#4b5563", hint: "más" },
     { name: "Paramount+", slug: "paramountplus",ink: "#0064FF", url: "https://www.paramountplus.com/ar/",       color: "#0057e7" },
     { name: "Spotify",    slug: "spotify",      ink: "#1DB954", url: "https://open.spotify.com/",               color: "#1db954" },
-    { name: "MercadoPlay",slug: "mercadolibre", ink: "#2D3277", url: "https://play.mercadolibre.com.ar/?origin=navigation_menu_web#nav-header", color: "#ffe600", fg: "#111", hint: "gratis" },
+    { name: "Mas canales IPTV", emoji: "📺",       url: "canales.html",                              color: "#1f2937", hint: "IPTV" },
     { name: "Telefe",     emoji: "📺",          url: "https://www.mitelefe.com/telefe-en-vivo", color: "#00a0e0", hint: "EN VIVO" },
     { name: "Cine.ar",    emoji: "🎬",          url: "https://play.cine.ar/bienvenida/",        color: "#7b2ff7", hint: "cine AR" },
   ];
@@ -180,7 +181,7 @@
 
     const logo = app.emoji
       ? `<span class="logo emoji">${app.emoji}</span>`
-      : `<span class="logo" style="--icon:${icon(app.slug)}; --ink:${app.ink}"></span>`;
+      : `<span class="logo"><img src="${icon(app.slug)}" alt="${app.name}" /></span>`;
 
     btn.innerHTML = `
       ${app.hint ? `<span class="hint">${app.hint}</span>` : ""}
